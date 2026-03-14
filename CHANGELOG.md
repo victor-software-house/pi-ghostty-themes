@@ -2,6 +2,13 @@
 
 All notable changes to this repository are documented in this file.
 
+## [0.3.0](https://github.com/victor-software-house/pi-ghostty-themes/compare/pi-ghostty-themes-v0.2.1...pi-ghostty-themes-v0.3.0) (2026-03-14)
+
+
+### Features
+
+* bundle skill for pi package discovery, add npm publish metadata ([#7](https://github.com/victor-software-house/pi-ghostty-themes/issues/7)) ([2ddc3b2](https://github.com/victor-software-house/pi-ghostty-themes/commit/2ddc3b2bdd15ebf6cea6b3effc0d0543ae67393e))
+
 ## [0.2.1](https://github.com/victor-software-house/pi-ghostty-themes/compare/pi-ghostty-themes-v0.2.0...pi-ghostty-themes-v0.2.1) (2026-03-14)
 
 
