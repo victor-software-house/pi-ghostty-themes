@@ -12,7 +12,7 @@
   "license": "MIT",
   "pi": {
     "themes": [
-      "./themes/*.json"
+      "./themes"
     ]
   }
 }
