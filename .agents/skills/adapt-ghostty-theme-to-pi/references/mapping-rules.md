@@ -34,16 +34,23 @@ Derive these from the background by small shifts only.
 | `toolSuccessBg` | prefer warm/neutral success surface if green is foreign |
 | `toolErrorBg` | darkest low-saturation error-tinted surface |
 
-### Semantic colors
+### Semantic colors — distinct operation states
+
+Command success, command failure, and file operations (read, edit, write) must each have visually distinct colors. Users scan tool output quickly; collapsed hues waste attention.
 
 | pi token | Guideline |
 |---|---|
-| `success` | calm readable accent, not necessarily green |
-| `error` | strongest urgent accent |
-| `warning` | softer urgent accent |
-| `toolDiffAdded` | readable positive accent |
-| `toolDiffRemoved` | urgent accent |
+| `success` | calm readable accent, lean green/teal from palette |
+| `error` | strongest urgent accent, lean red/orange from palette |
+| `warning` | softer warm accent, lean yellow/amber from palette |
+| `toolSuccessBg` | background tinted toward success hue |
+| `toolErrorBg` | background tinted toward error hue |
+| `toolPendingBg` | neutral panel, no strong tint |
+| `toolDiffAdded` | readable positive accent (green/teal family), distinct from success |
+| `toolDiffRemoved` | urgent accent (red/orange family), distinct from error text |
 | `toolDiffContext` | muted gray |
+
+Hard rule: `success`, `error`, and `warning` must never share the same hue family within a theme. If the source palette lacks three distinct hue families, derive the missing one by shifting the closest palette color toward green, red, or yellow respectively.
 
 ## Footer rule
 
