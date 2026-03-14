@@ -2,6 +2,13 @@
 
 All notable changes to this repository are documented in this file.
 
+## [0.2.1](https://github.com/victor-software-house/pi-ghostty-themes/compare/pi-ghostty-themes-v0.2.0...pi-ghostty-themes-v0.2.1) (2026-03-14)
+
+
+### Bug Fixes
+
+* add distinct success/warning colors to TNB variants ([#3](https://github.com/victor-software-house/pi-ghostty-themes/issues/3)) ([c8c5a87](https://github.com/victor-software-house/pi-ghostty-themes/commit/c8c5a87e1fc76d2b43207ef1c740b4dc87709f21))
+
 ## [0.2.0](https://github.com/victor-software-house/pi-ghostty-themes/compare/pi-ghostty-themes-v0.1.1...pi-ghostty-themes-v0.2.0) (2026-03-14)
 
 
