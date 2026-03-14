@@ -1,5 +1,7 @@
 # pi-ghostty-themes
 
+[![Release](https://img.shields.io/github/v/release/victor-software-house/pi-ghostty-themes?sort=semver)](https://github.com/victor-software-house/pi-ghostty-themes/releases)
+
 Ghostty-inspired themes for pi, starting from the `Tomorrow Night Burns` Ghostty theme and adapting it to pi's 51-token theme model.
 
 ## Included themes
