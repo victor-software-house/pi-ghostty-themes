@@ -13,13 +13,29 @@ Current package:
 
 ## Ghostty source themes
 
-The single source of truth for Ghostty palettes is the bundled theme directory:
+### Origin chain
+
+The color palettes flow through three stages:
+
+1. **Upstream**: [mbadolato/iTerm2-Color-Schemes](https://github.com/mbadolato/iTerm2-Color-Schemes) (MIT licensed). This is the original collection. Ghostty does not author its own themes.
+2. **Ghostty build**: A weekly CI workflow fetches iTerm2-Color-Schemes, converts to Ghostty format, and embeds the result into the Ghostty binary via `build.zig.zon` (`iterm2_themes` dependency).
+3. **Local app bundle**: `/Applications/Ghostty.app/Contents/Resources/ghostty/themes/` contains the snapshot embedded at Ghostty build time.
+
+### Which source to read
+
+For theme generation, read from the local Ghostty app bundle:
 
 ```
 /Applications/Ghostty.app/Contents/Resources/ghostty/themes/
 ```
 
-Always read theme data from this path. Do not rely on external URLs, caches, or copied snippets. If the path changes after a Ghostty update, find the new location inside `Ghostty.app/Contents/Resources/`.
+This is the most convenient source because the files are already in Ghostty's key=value format. The upstream iTerm2-Color-Schemes repo stores `.itermcolors` (XML plist), which would require a conversion step.
+
+If the path changes after a Ghostty update, find the new location inside `Ghostty.app/Contents/Resources/`.
+
+### Licensing
+
+The color palettes originate from iTerm2-Color-Schemes under MIT license. Individual scheme files may carry their own license (check the upstream repo for per-theme attribution). Adapting color values into pi theme tokens is permitted under MIT.
 
 ## Theme change policy
 
