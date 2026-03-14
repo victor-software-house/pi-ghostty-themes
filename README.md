@@ -65,6 +65,20 @@ Not every pi token has a direct Ghostty equivalent. In particular:
 - `dim` must stay readable enough for pi's footer
 - syntax colors must be assigned by visual role, not by terminal ANSI meaning
 
+## Release process
+
+This repository uses `release-please` for SemVer automation.
+
+- merge normal changes to `main`
+- `release-please` opens or updates a release PR
+- merge the release PR to publish the next tag and GitHub release
+
+Commit messages should follow Conventional Commits:
+
+- `fix:` for patch releases
+- `feat:` for minor releases
+- `feat!:` or `BREAKING CHANGE:` for major releases
+
 ## License
 
 MIT
