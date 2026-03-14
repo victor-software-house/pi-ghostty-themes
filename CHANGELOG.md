@@ -2,6 +2,13 @@
 
 All notable changes to this repository are documented in this file.
 
+## [0.2.0](https://github.com/victor-software-house/pi-ghostty-themes/compare/pi-ghostty-themes-v0.1.1...pi-ghostty-themes-v0.2.0) (2026-03-14)
+
+
+### Features
+
+* add 64 new Ghostty-derived semantic themes ([#1](https://github.com/victor-software-house/pi-ghostty-themes/issues/1)) ([126df3b](https://github.com/victor-software-house/pi-ghostty-themes/commit/126df3bbd636695e59e2a72a5a9457a01eccebcb))
+
 ## [0.1.1] - 2026-03-13
 
 ### Changed
