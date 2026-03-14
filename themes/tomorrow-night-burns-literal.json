@@ -13,9 +13,12 @@
     "rose": "#df9395",
     "roseMuted": "#ba8586",
     "white": "#f5f5f5",
+    "success": "#7a9a7a",
+    "warning": "#c4a55a",
+    "diffAdded": "#8aaa8a",
     "panel": "#1b1b1b",
     "panelAlt": "#202020",
-    "panelSuccess": "#232120",
+    "panelSuccess": "#1d211d",
     "panelError": "#2a1b1c"
   },
   "colors": {
@@ -23,9 +26,9 @@
     "border": "red",
     "borderAccent": "redBright",
     "borderMuted": "darkGray",
-    "success": "roseMuted",
+    "success": "success",
     "error": "redBright",
-    "warning": "redMid",
+    "warning": "warning",
     "muted": "gray",
     "dim": "gray",
     "text": "",
@@ -54,7 +57,7 @@
     "mdHr": "gray",
     "mdListBullet": "redMid",
 
-    "toolDiffAdded": "roseMuted",
+    "toolDiffAdded": "diffAdded",
     "toolDiffRemoved": "redBright",
     "toolDiffContext": "gray",
 
