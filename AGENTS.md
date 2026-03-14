@@ -11,6 +11,16 @@ This repository publishes Ghostty-inspired themes for pi.
 Current package:
 - `@victor/pi-ghostty-themes`
 
+## Ghostty source themes
+
+The single source of truth for Ghostty palettes is the bundled theme directory:
+
+```
+/Applications/Ghostty.app/Contents/Resources/ghostty/themes/
+```
+
+Always read theme data from this path. Do not rely on external URLs, caches, or copied snippets. If the path changes after a Ghostty update, find the new location inside `Ghostty.app/Contents/Resources/`.
+
 ## Theme change policy
 
 When editing themes:

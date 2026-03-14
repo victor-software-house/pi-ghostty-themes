@@ -1,26 +1,26 @@
 {
   "$schema": "https://raw.githubusercontent.com/badlogic/pi-mono/main/packages/coding-agent/src/modes/interactive/theme/theme-schema.json",
-  "name": "tomorrow-night-burns-semantic",
+  "name": "japanesque-semantic",
   "vars": {
-    "bg": "#151515",
-    "fg": "#a1b0b8",
-    "gray": "#5d6f71",
-    "darkGray": "#242424",
-    "accent": "#ff443e",
-    "accentDark": "#cd120c",
-    "accentMid": "#d07a7b",
-    "secondary": "#5d6f71",
+    "bg": "#1e1e1e",
+    "fg": "#f7f6ec",
+    "gray": "#595b59",
+    "darkGray": "#2d2d2d",
+    "accent": "#edcf4f",
+    "accentDark": "#bb9d1d",
+    "accentMid": "#f2e29d",
+    "secondary": "#165c7c",
     "white": "#f5f5f5",
-    "panel": "#1a1a1a",
-    "panelAlt": "#1d1d1d",
-    "panelSuccess": "#1f2021",
-    "panelError": "#312121",
-    "panelInfo": "#1f1f1f",
-    "success": "#5d6f71",
-    "error": "#fc595f",
-    "warning": "#beaf87",
-    "diffAdded": "#5d6f71",
-    "diffRemoved": "#fc595f"
+    "panel": "#232323",
+    "panelAlt": "#262626",
+    "panelSuccess": "#252c2d",
+    "panelError": "#35262a",
+    "panelInfo": "#282828",
+    "success": "#389aad",
+    "error": "#cf3f61",
+    "warning": "#e9b32a",
+    "diffAdded": "#389aad",
+    "diffRemoved": "#cf3f61"
   },
   "colors": {
     "accent": "accent",
@@ -76,8 +76,8 @@
     "bashMode": "accent"
   },
   "export": {
-    "pageBg": "#151515",
-    "cardBg": "#1a1a1a",
-    "infoBg": "#1f1f1f"
+    "pageBg": "#1e1e1e",
+    "cardBg": "#232323",
+    "infoBg": "#282828"
   }
 }

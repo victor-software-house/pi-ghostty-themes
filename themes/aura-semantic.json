@@ -1,26 +1,26 @@
 {
   "$schema": "https://raw.githubusercontent.com/badlogic/pi-mono/main/packages/coding-agent/src/modes/interactive/theme/theme-schema.json",
-  "name": "tomorrow-night-burns-semantic",
+  "name": "aura-semantic",
   "vars": {
-    "bg": "#151515",
-    "fg": "#a1b0b8",
-    "gray": "#5d6f71",
-    "darkGray": "#242424",
-    "accent": "#ff443e",
-    "accentDark": "#cd120c",
-    "accentMid": "#d07a7b",
-    "secondary": "#5d6f71",
-    "white": "#f5f5f5",
-    "panel": "#1a1a1a",
-    "panelAlt": "#1d1d1d",
-    "panelSuccess": "#1f2021",
-    "panelError": "#312121",
-    "panelInfo": "#1f1f1f",
-    "success": "#5d6f71",
-    "error": "#fc595f",
-    "warning": "#beaf87",
-    "diffAdded": "#5d6f71",
-    "diffRemoved": "#fc595f"
+    "bg": "#15141b",
+    "fg": "#edecee",
+    "gray": "#4d4d4d",
+    "darkGray": "#24232a",
+    "accent": "#a277ff",
+    "accentDark": "#7045cd",
+    "accentMid": "#c7b1f6",
+    "secondary": "#61ffca",
+    "white": "#edecee",
+    "panel": "#1a1920",
+    "panelAlt": "#1d1c23",
+    "panelSuccess": "#1f2a2c",
+    "panelError": "#312128",
+    "panelInfo": "#1f1e25",
+    "success": "#61ffca",
+    "error": "#ff6767",
+    "warning": "#ffca85",
+    "diffAdded": "#8bf9d4",
+    "diffRemoved": "#ff6767"
   },
   "colors": {
     "accent": "accent",
@@ -76,8 +76,8 @@
     "bashMode": "accent"
   },
   "export": {
-    "pageBg": "#151515",
-    "cardBg": "#1a1a1a",
-    "infoBg": "#1f1f1f"
+    "pageBg": "#15141b",
+    "cardBg": "#1a1920",
+    "infoBg": "#1f1e25"
   }
 }
