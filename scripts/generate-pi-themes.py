@@ -506,24 +506,98 @@ def generate_theme(name, g):
 
 
 # ---------------------------------------------------------------------------
+# Validation
+# ---------------------------------------------------------------------------
+def validate_themes():
+    """Check all semantic themes for hue distinctness and contrast."""
+    issues = []
+    for f in sorted(os.listdir(OUTPUT_DIR)):
+        if not f.endswith("-semantic.json"):
+            continue
+        with open(os.path.join(OUTPUT_DIR, f)) as fh:
+            t = json.load(fh)
+        v = t.get("vars", {})
+        s, e, w = v.get("success", ""), v.get("error", ""), v.get("warning", "")
+        bg = v.get("bg", "#000000")
+        acc = v.get("accent", "")
+        problems = []
+        if s and e:
+            se = hue_distance(s, e)
+            if se < 25:
+                problems.append(f"success-error hue={se:.0f}deg (<25)")
+        if s and w:
+            sw = hue_distance(s, w)
+            if sw < 25:
+                problems.append(f"success-warning hue={sw:.0f}deg (<25)")
+        if e and w:
+            ew = hue_distance(e, w)
+            if ew < 25:
+                problems.append(f"error-warning hue={ew:.0f}deg (<25)")
+        if acc and e and acc == e:
+            problems.append("accent identical to error")
+        if acc and e and hue_distance(acc, e) < 10 and abs(luminance(acc) - luminance(e)) < 15:
+            problems.append("accent nearly identical to error")
+        # Footer contrast
+        gray = v.get("gray", "")
+        if gray and bg and abs(luminance(gray) - luminance(bg)) < 40:
+            problems.append(f"dim/gray contrast too low ({abs(luminance(gray) - luminance(bg)):.0f})")
+        if problems:
+            issues.append((t.get("name", f), problems))
+    if issues:
+        print(f"{len(issues)} theme(s) with issues:")
+        for name, probs in issues:
+            print(f"  {name}: {', '.join(probs)}")
+        return False
+    else:
+        count = len([f for f in os.listdir(OUTPUT_DIR) if f.endswith("-semantic.json")])
+        print(f"All {count} semantic themes pass validation")
+        return True
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
-generated = []
-for name in THEME_NAMES:
-    filepath = os.path.join(THEMES_DIR, name)
-    if not os.path.exists(filepath):
-        print(f"SKIP: {name}")
-        continue
-    with open(filepath) as f:
-        raw = f.read()
-    g = parse_ghostty(raw)
-    theme = generate_theme(name, g)
-    slug = slugify(name)
-    out_path = os.path.join(OUTPUT_DIR, f"{slug}-semantic.json")
-    with open(out_path, "w") as f:
-        json.dump(theme, f, indent=2)
-        f.write("\n")
-    generated.append(name)
-    print(f"OK: {name} -> {slug}-semantic.json")
+def main():
+    import argparse
+    parser = argparse.ArgumentParser(description="Generate pi semantic themes from Ghostty palettes")
+    parser.add_argument("--name", nargs="+", help="Generate only the named theme(s). Omit to generate all.")
+    parser.add_argument("--validate", action="store_true", help="Validate existing themes without regenerating.")
+    parser.add_argument("--themes-dir", default=THEMES_DIR, help="Ghostty themes directory.")
+    parser.add_argument("--output-dir", default=OUTPUT_DIR, help="Output directory for pi themes.")
+    args = parser.parse_args()
 
-print(f"\nGenerated {len(generated)} themes")
+    if args.validate:
+        ok = validate_themes()
+        raise SystemExit(0 if ok else 1)
+
+    names = args.name if args.name else THEME_NAMES
+    themes_dir = args.themes_dir
+    output_dir = args.output_dir
+
+    generated = []
+    for name in names:
+        filepath = os.path.join(themes_dir, name)
+        if not os.path.exists(filepath):
+            print(f"SKIP: {name} (not found in {themes_dir})")
+            continue
+        with open(filepath) as f:
+            raw = f.read()
+        g = parse_ghostty(raw)
+        theme = generate_theme(name, g)
+        slug = slugify(name)
+        out_path = os.path.join(output_dir, f"{slug}-semantic.json")
+        with open(out_path, "w") as f:
+            json.dump(theme, f, indent=2)
+            f.write("\n")
+        generated.append(name)
+        print(f"OK: {name} -> {slug}-semantic.json")
+
+    print(f"\nGenerated {len(generated)} theme(s)")
+
+    # Auto-validate after generation
+    print()
+    validate_themes()
+
+
+if __name__ == "__main__":
+    main()
