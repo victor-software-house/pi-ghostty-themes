@@ -4,156 +4,177 @@ description: Adapt a Ghostty terminal theme into one or more pi themes. Use when
 files:
   references:
     - mapping-rules.md
+    - token-derivation-map.md
+    - colors-template.json
 ---
 
 # adapt-ghostty-theme-to-pi
 
 ## Reference Index
 
-- `references/mapping-rules.md` — read when you need the detailed token mapping rules, derivation heuristics, validation checklist, and release classification.
+- `references/mapping-rules.md` — detailed token mapping rules, derivation heuristics, validation checklist, and release classification.
+- `references/token-derivation-map.md` — every pi token classified as direct, palette pick, derived, or synthesized, with exact formulas.
+- `references/colors-template.json` — the static `colors` block template. This never changes across themes.
 
-## Purpose
+## Architecture
 
-Use this skill to turn a Ghostty theme into a pi theme pack without losing the source theme's identity.
+A pi theme has three sections:
 
-Ghostty provides terminal colors such as:
-- background
-- foreground
-- cursor
-- selection
-- ANSI palette entries
-
-pi requires a larger semantic model with 51 tokens, including:
-- panel backgrounds
-- tool result states
-- markdown styling
-- syntax colors
-- thinking level borders
-- footer-readable dim/muted colors
-
-This skill explains how to bridge that gap.
-
-## Workflow
-
-### 1. Capture the Ghostty source theme
-
-Get the source data from one of these:
-- `ghostty +show-config`
-- the Ghostty theme file under the app resources
-- a custom Ghostty config file
-
-Record at minimum:
-- `background`
-- `foreground`
-- `cursor-color`
-- `selection-background`
-- `selection-foreground`
-- palette entries `0-15`
-
-### 2. Identify anchor colors
-
-Pick the colors that define the theme's identity:
-- base background
-- main foreground
-- muted gray / secondary neutral
-- strongest accent(s)
-- soft accent(s)
-- darkest usable panel color
-- brightest readable text color
-
-These anchors become `vars` in the pi theme.
-
-### 3. Split tokens into direct, semantic, and invented groups
-
-Use three buckets.
-
-**Direct**
-- colors that map cleanly from Ghostty
-- examples: `accent`, `text`, `mdCode`, `mdHeading`
-
-**Semantic**
-- colors that need a role-based choice from the existing palette
-- examples: `success`, `warning`, `error`, `toolDiffAdded`, `toolDiffRemoved`
-
-**Invented surfaces**
-- colors that Ghostty does not define directly
-- examples: `userMessageBg`, `customMessageBg`, `toolPendingBg`, `toolSuccessBg`, `toolErrorBg`, `selectedBg`
-
-Invented surfaces must still feel native to the source theme.
-
-### 4. Preserve theme identity first
-
-When in doubt:
-- keep the Ghostty background and foreground relationship intact
-- prefer source palette colors over imported colors from other palettes
-- derive surfaces by nudging the source background, not by introducing unrelated hues
-- use the strongest accent sparingly for emphasis, not everywhere
-
-### 5. Derive missing semantic colors carefully
-
-If the Ghostty palette lacks a natural semantic color, derive by function, not by textbook color naming.
-
-Examples:
-- `success` does not need to be green if the source theme has no green identity
-- `warning` can be a softer accent rather than yellow
-- `toolSuccessBg` can be a warm neutral panel if green looks foreign to the palette
-
-### 6. Treat footer readability as a hard requirement
-
-pi uses dimmed colors heavily in the footer.
-
-Rules:
-- never make `dim` so dark that the footer disappears into the background
-- test `dim` against the base background, not just against panels
-- prefer readable subdued neutrals over ultra-low-contrast values
-
-### 7. Make variants intentionally
-
-Good variant strategies include:
-- `literal` — closest possible mapping to source palette
-- `semantic` — role-based balancing for daily use
-- `high-contrast` — stronger readability for dense pi UI
-- `steel` or equivalent — calmer variant that leans on neutral foregrounds
-
-Each variant should have a clear reason to exist.
-
-### 8. Keep names stable
-
-Do not rename published theme identifiers unless explicitly requested.
-
-Renames are breaking changes because users may reference theme names in pi settings.
-
-### 9. Validate before release
-
-Run:
-
-```bash
-jq empty themes/*.json
+```
+{ "$schema": "...", "name": "...", "vars": { ... }, "colors": { ... }, "export": { ... } }
 ```
 
-Also manually check:
-- footer readability
-- successful tool box background
-- error tool box background
-- markdown headings and links
-- code blocks
-- thinking border progression
+The critical insight: **the `colors` block is 100% static**. It is the same fixed template for every semantic theme. All per-theme variation lives in `vars` and `export`.
 
-### 10. Classify the change correctly for SemVer
+This means theme generation reduces to:
 
-In this repository:
-- visual tuning and readability fixes -> patch
-- new theme variants -> minor
-- renamed/removed themes or package structure changes -> major
+1. Parse Ghostty source -> extract `background`, `foreground`, `cursor-color`, `palette[0-15]`.
+2. Compute `vars` (19 values) using the derivation formulas.
+3. Stamp `colors` from the template (no logic needed).
+4. Set `export` from three vars (`bg`, `panel`, `panelInfo`).
 
-Use Conventional Commits so `release-please` can infer the release.
+## What is automated vs manual
 
-## Output expectations
+### Fully automated (script handles these)
 
-When creating or revising a theme, include:
-- what Ghostty theme was used as source
-- which values were direct mappings
-- which values were semantic derivations
-- which values were invented surfaces
-- why any difficult tokens were chosen differently from the source palette
-- what release impact the change has
+**Direct mappings** (Ghostty field -> pi var, no decisions):
+
+| pi var | Ghostty source |
+|---|---|
+| `bg` | `background` |
+| `fg` | `foreground` |
+| `white` | `palette[15]` if bright enough, else `#f5f5f5` |
+
+**Deterministic derivations** (formula from bg/fg, no palette judgment):
+
+| pi var | formula |
+|---|---|
+| `darkGray` | `lighten(bg, 15)` |
+| `panel` | `lighten(bg, 5)` |
+| `panelAlt` | `lighten(bg, 8)` |
+| `panelInfo` | `lighten(bg, 10)` |
+| `accentDark` | `darken(accent, 50 or 25)` depending on accent luminance |
+| `accentMid` | `mix(accent, fg, 0.5)` |
+| `panelSuccess` | `tint_toward(lighten(bg, 6), success, 0.07)` |
+| `panelError` | `tint_toward(lighten(bg, 6), error, 0.10)` |
+| `diffAdded` | `success` or `mix(success, fg, 0.7)` if too bright |
+| `diffRemoved` | `error` or `mix(error, fg, 0.7)` if too bright |
+
+**Static template** (identical for every theme):
+- The entire `colors` block — see `references/colors-template.json`
+- The entire `export` block — always `{ pageBg: bg, cardBg: panel, infoBg: panelInfo }`
+
+### Heuristic (script handles but may need manual override)
+
+These use palette analysis with fallback chains:
+
+| pi var | heuristic summary |
+|---|---|
+| `accent` | `cursor-color` if saturated + distinct from bg/fg, else best saturated ANSI color |
+| `gray` | `palette[8]` if readable against bg, else `lighten(bg, 55)` |
+| `secondary` | most saturated ANSI with hue > 40deg from accent and > 30deg from error |
+| `success` | best green/teal (hue 80-200) ANSI with 60+ hue distance from error |
+| `error` | best red/warm (hue < 30 or > 330) ANSI |
+| `warning` | best yellow/amber (hue 30-80) ANSI, 25+ hue distance from both error and success |
+
+Each has a synthesized fallback when the palette lacks the needed hue family (mix a canonical color like `#5faf5f` with `fg`).
+
+### Manual only (never automated)
+
+- Variant creation (literal, high-contrast, steel) — each variant deliberately reweights the token assignments in the `colors` block.
+- Per-theme `colors` overrides — when a specific theme needs a non-standard token wiring (e.g. `toolTitle` using `rose` instead of `white`).
+- Subjective palette tuning — when the heuristic picks a technically valid but aesthetically poor color.
+
+## Automation
+
+### Batch generation
+
+The generation script lives at `scripts/generate-pi-themes.py`. Run it to regenerate all semantic themes from the Ghostty source:
+
+```bash
+python3 scripts/generate-pi-themes.py
+```
+
+It reads from the Ghostty bundled themes directory (see AGENTS.md for the path), computes vars, stamps the template, writes to `themes/`.
+
+### Adding a single theme
+
+```bash
+python3 scripts/generate-pi-themes.py --name "Theme Name"
+```
+
+Or manually:
+
+1. Read the Ghostty theme file.
+2. Apply the var derivation formulas from `references/token-derivation-map.md`.
+3. Copy `references/colors-template.json` as the `colors` block.
+4. Set `export` to `{ pageBg: bg, cardBg: panel, infoBg: panelInfo }`.
+5. Validate: `jq empty themes/new-theme-semantic.json`
+
+### Validation
+
+```bash
+# JSON syntax
+jq empty themes/*.json
+
+# Hue distinctness (success/error/warning must be 25+ degrees apart)
+python3 scripts/generate-pi-themes.py --validate
+```
+
+## Workflow summary
+
+### For new themes (use the script)
+
+1. Add theme name(s) to the `THEME_NAMES` list in `scripts/generate-pi-themes.py`.
+2. Run the script.
+3. Spot-check: accent, success, error, warning colors.
+4. Commit with `feat:` prefix.
+
+### For visual tuning (manual edits)
+
+1. Edit the `vars` block only. Do not change `colors` unless creating a non-semantic variant.
+2. Commit with `fix:` prefix.
+
+### For new variants (manual)
+
+1. Copy the semantic theme as a starting point.
+2. Override specific `colors` wiring for the variant strategy.
+3. Commit with `feat:` prefix.
+
+## Ghostty -> pi: what maps where
+
+```
+Ghostty                          pi vars              pi colors (template)
+─────────────────────────────    ──────────────────   ────────────────────
+background ──────────────────>   bg ───────────────>  (export.pageBg)
+foreground ──────────────────>   fg ───────────────>  toolOutput, mdCodeBlock,
+                                                      syntaxVariable
+cursor-color ────────────────>   accent (if sat) ──>  accent, borderAccent,
+                                                      mdCode, syntaxKeyword,
+                                                      bashMode, mdListBullet,
+                                                      customMessageLabel,
+                                                      thinkingHigh
+palette[8] (bright black) ──>   gray ─────────────>  border, muted, dim,
+                                                      thinkingText, mdLinkUrl,
+                                                      mdQuote, mdQuoteBorder,
+                                                      toolDiffContext,
+                                                      syntaxComment,
+                                                      syntaxPunctuation,
+                                                      thinkingMinimal
+palette[15] (bright white) ─>   white ────────────>  toolTitle, mdHeading,
+                                                      syntaxType, thinkingXhigh
+palette[1] (red) ───────────>   error (heuristic) ─> error, syntaxOperator,
+                                                      toolDiffRemoved
+palette[2] (green) ─────────>   success (heuristic)> success, syntaxString,
+                                                      toolDiffAdded
+palette[3] (yellow) ────────>   warning (heuristic)> warning, syntaxNumber
+best distinct hue from ANSI ─>  secondary ────────>  mdLink, syntaxFunction
+background + offsets ────────>   panel, panelAlt,     userMessageBg, customMessageBg,
+                                 panelInfo,           toolPendingBg, selectedBg
+                                 panelSuccess,        toolSuccessBg
+                                 panelError           toolErrorBg
+accent + offsets ────────────>   accentDark, ──────>  mdCodeBlockBorder,
+                                 accentMid             thinkingLow, thinkingMedium
+darkGray (bg + 15) ─────────>   darkGray ─────────>  borderMuted, mdHr,
+                                                      thinkingOff
+```
